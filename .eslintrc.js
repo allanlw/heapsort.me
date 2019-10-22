@@ -5,6 +5,7 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
+    'google',
   ],
   parserOptions: {
     ecmaFeatures: {
@@ -46,5 +47,7 @@ module.exports = {
     "prefer-const": "warn",
     "no-useless-rename": "warn",
     "arrow-spacing": "error",
+    "require-jsdoc": "off",
+    "max-len": "off",
   },
 };

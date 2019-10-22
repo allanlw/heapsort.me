@@ -41,9 +41,9 @@ const App = {
     this.mode = "sort";
     const text = document.getElementById("entry").value;
     const typeSlug = document.querySelector("input[name=\"item_type\"]:checked").value;
-    this.itemType = this.itemTypes.filter(x => x.slug === typeSlug)[0];
+    this.itemType = this.itemTypes.filter((x) => x.slug === typeSlug)[0];
     m.redraw.sync(); // force creation of the frames
-    this.sort(text).then(result => {
+    this.sort(text).then((result) => {
       this.result = result;
       this.mode = "done";
     });
@@ -54,7 +54,7 @@ const App = {
       return <form id="start">
         <label for="entry">Enter URLs separated by newlines:</label>
         <textarea id="entry"/>
-        {this.itemTypes.map((x,i) => {
+        {this.itemTypes.map((x, i) => {
           return <>
             <label for="item_type_{x.slug}">{x.description}</label>
             <input type="radio" name="item_type" value={x.slug} checked={i===0}/>
@@ -67,8 +67,8 @@ const App = {
       return <>
         <span id="info">{JSON.stringify(this)}</span>
         <div id="container">
-          {m(this.itemType, {item: this.comparison[0], id:"a"})}
-          {m(this.itemType, {item: this.comparison[1], id:"b"})}
+          {m(this.itemType, {item: this.comparison[0], id: "a"})}
+          {m(this.itemType, {item: this.comparison[1], id: "b"})}
         </div>
       </>;
     case "done":
@@ -82,14 +82,16 @@ const App = {
     this.heapSize = heapSize;
   },
   cmp: function(a, b) {
-    this.comparison = [a,b];
+    this.comparison = [a, b];
     m.redraw();
     return new Promise(function(accept) {
       App.promiseAccept = accept;
     });
   },
   sort: function(text) {
-    const items = text.split("\n").filter(function(x) { return x.length > 0; });
+    const items = text.split("\n").filter(function(x) {
+      return x.length > 0;
+    });
     return BinaryHeap.sortTopN(items, this.cmp.bind(this), this.progress.bind(this), items.length);
   },
   keypress: function(e) {

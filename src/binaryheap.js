@@ -17,7 +17,7 @@
 // to compare. Returns -1 if a is a<b, and 1 if a>b, (or theoretically 0 if
 // they're equal)
 export default class BinaryHeap {
-  constructor(cmpFunction){
+  constructor(cmpFunction) {
     this.content = [];
     this.cmpFunction = cmpFunction;
   }
@@ -53,12 +53,13 @@ export default class BinaryHeap {
     // When at 0, an element can not go up any further.
     while (n > 0) {
       // Compute the parent element's index, and fetch it.
-      const parentN = Math.floor((n + 1) / 2) - 1,
-        parent = this.content[parentN];
+      const parentN = Math.floor((n + 1) / 2) - 1;
+      const parent = this.content[parentN];
       // If the parent has a lesser score, things are in order and we
       // are done.
-      if (await this.cmpFunction(element, parent) > 0)
+      if (await this.cmpFunction(element, parent) > 0) {
         break;
+      }
 
       // Otherwise, swap the parent with the current element and
       // continue.
@@ -70,12 +71,13 @@ export default class BinaryHeap {
 
   async sinkDown(n) {
     // Look up the target element and its score.
-    const length = this.content.length,
-      element = this.content[n];
+    const length = this.content.length;
+    const element = this.content[n];
 
-    while(true) {
+    while (true) {
       // Compute the indices of the child elements.
-      const child2N = (n + 1) * 2, child1N = child2N - 1;
+      const child2N = (n + 1) * 2;
+      const child1N = child2N - 1;
       // This is used to store the new position of the element,
       // if any.
       let swap = null;
@@ -120,7 +122,7 @@ export default class BinaryHeap {
       await heap.push(input[i]);
     }
 
-    while(res.length < n && heap.size > 0) {
+    while (res.length < n && heap.size > 0) {
       progress("pop", res.length, input.length, heap.size);
       res.push(await heap.pop());
     }

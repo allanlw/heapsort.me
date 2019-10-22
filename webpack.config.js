@@ -13,7 +13,7 @@ module.exports = {
     publicPath: "/bin/",
     liveReload: false,
   },
-  devtool: "inline-source-map",
+  devtool: "source-map",
   module: {
     rules: [{
       test: /\.js$/,

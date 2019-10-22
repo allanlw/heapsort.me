@@ -30,7 +30,8 @@
   },
   "dependencies": {
     "core-js": "^3.3.2",
-    "mithril": "^2.0.4"
+    "mithril": "^2.0.4",
+    "regenerator-runtime": "^0.13.3"
   },
   "scripts": {
     "start": "webpack-dev-server",

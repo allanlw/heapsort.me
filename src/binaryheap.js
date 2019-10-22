@@ -35,9 +35,9 @@ export default class BinaryHeap {
 
   async pop() {
     // Store the first element so we can return it later.
-    var result = this.content[0];
+    const result = this.content[0];
     // Get the element at the end of the array.
-    var end = this.content.pop();
+    const end = this.content.pop();
     // If there are any elements left, put the end element at the
     // start, and let it sink down.
     if (this.content.length > 0) {
@@ -49,11 +49,11 @@ export default class BinaryHeap {
 
   async bubbleUp(n) {
     // Fetch the element that has to be moved.
-    var element = this.content[n];
+    const element = this.content[n];
     // When at 0, an element can not go up any further.
     while (n > 0) {
       // Compute the parent element's index, and fetch it.
-      var parentN = Math.floor((n + 1) / 2) - 1,
+      const parentN = Math.floor((n + 1) / 2) - 1,
         parent = this.content[parentN];
       // If the parent has a lesser score, things are in order and we
       // are done.
@@ -70,45 +70,50 @@ export default class BinaryHeap {
 
   async sinkDown(n) {
     // Look up the target element and its score.
-    var length = this.content.length,
+    const length = this.content.length,
       element = this.content[n];
 
     while(true) {
       // Compute the indices of the child elements.
-      var child2N = (n + 1) * 2, child1N = child2N - 1;
+      const child2N = (n + 1) * 2, child1N = child2N - 1;
       // This is used to store the new position of the element,
       // if any.
-      var swap = null;
+      let swap = null;
+      let swapItem = null;
       // If the first child exists (is inside the array)...
       if (child1N < length) {
         // Look it up and compute its score.
-        var child1 = this.content[child1N];
+        const child1 = this.content[child1N];
         // If the child is better than the element, we need to swap
-        if (await this.cmpFunction(child1, element) < 0)
+        if (await this.cmpFunction(child1, element) < 0) {
           swap = child1N;
+          swapItem = child1;
+        }
       }
       // Do the same checks for the other child.
       if (child2N < length) {
-        var child2 = this.content[child2N];
+        const child2 = this.content[child2N];
         // if the NEW element is in position child2n is better than what's in position
         // n, we need to swap
-        if (await this.cmpFunction(swap == null ? element : child1, child2) > 0)
+        if (await this.cmpFunction((swap === null) ? element : swapItem, child2) > 0) {
           swap = child2N;
+          swapItem = child2;
+        }
       }
 
       // No need to swap further, we are done.
-      if (swap == null) break;
+      if (swap === null) break;
 
       // Otherwise, swap and continue.
-      this.content[n] = this.content[swap];
+      this.content[n] = swapItem;
       this.content[swap] = element;
       n = swap;
     }
   }
 
   static async sortTopN(input, cmpFunc, progress, n) {
-    let heap = new BinaryHeap(cmpFunc);
-    let res = [];
+    const heap = new BinaryHeap(cmpFunc);
+    const res = [];
 
     for (let i = 0; i < input.length; i++) {
       progress("push", res.length, input.length, heap.size);

@@ -36,7 +36,8 @@
   "scripts": {
     "start": "webpack-dev-server",
     "build": "webpack -p",
-    "lint": "eslint src || true",
-    "lint-fix": "eslint --fix src || true"
+    "lint": "eslint . || true",
+    "lint-check": "eslint .",
+    "lint-fix": "eslint --fix . || true"
   }
 }

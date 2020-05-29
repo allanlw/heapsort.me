@@ -56,12 +56,25 @@ kbd {
     margin: 1em;
   }
 
-  #entry {
+  .entry-container {
+    width: 80%;
     margin: 1em auto;
     display: block;
-    width: 80%;
-    height: 16em;
+    height: 16em; 
+    position: relative;
   }
+
+  .entry-container button {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+  }
+
+  #entry {
+    width: 100%;
+    height: 100%;
+  }
+
 
   .error {
     color: red;

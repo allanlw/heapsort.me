@@ -1,6 +1,7 @@
 import "./style.scss";
 
 import BinaryHeap from "./binaryheap.js";
+import fetchExamples from "./example.js";
 import m from "mithril";
 
 const ImgItem = {
@@ -79,7 +80,10 @@ const App = {
           })}
         </div>
         <label for="entry" class="input-instruction">Entries separated by newlines:</label>
-        <textarea id="entry"/>
+        <div class="entry-container">
+          <textarea id="entry"/>
+          <button id="help-example" onclick={this.getExamples}>Populate with example images from Wikimedia Commons</button>
+        </div>
         <label for="num-outputs" class="input-instruction">Number of "best" outputs:</label>
         <div>
           <input type="number" id="num-outputs" min="0" placeholder="blank/0 to sort all"/>
@@ -164,6 +168,13 @@ const App = {
     numOutputs = Math.min(items.length, Math.max(1, numOutputs));
     this.mode = "sort";
     return BinaryHeap.sortTopN(items, this.cmp.bind(this), this.progress.bind(this), numOutputs);
+  },
+  getExamples: function() {
+    document.getElementById("entry").value = "Loading...";
+    fetchExamples().then((ex) => {
+      document.getElementById("entry").value = ex.join("\n");
+    });
+    return false;
   },
   downkeys: {},
   keyup: function(e) {

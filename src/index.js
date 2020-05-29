@@ -6,8 +6,9 @@ import m from "mithril";
 const ImgItem = {
   slug: "img",
   description: "Image URLs",
+  onupdate: function() {  },
   view: function(vnode) {
-    return <img src={vnode.attrs.item} id={vnode.attrs.id}/>;
+    return  <div id={vnode.attrs.id}><img src={vnode.attrs.item}/></div>
   },
 };
 const IframeItem = {
@@ -26,7 +27,7 @@ const TextItem = {
 };
 
 const App = {
-  promiseAccept: null,
+  cmpPromiseAccept: null,
   itemTypes: [
     ImgItem,
     IframeItem,
@@ -56,19 +57,20 @@ const App = {
         <textarea id="entry"/>
         {this.itemTypes.map((x, i) => {
           return <>
-            <label for="item_type_{x.slug}">{x.description}</label>
-            <input type="radio" name="item_type" value={x.slug} checked={i===0}/>
+            <label for={"item_type_" + x.slug}>{x.description}</label>
+            <input type="radio" name="item_type" id={"item_type_" + x.slug} value={x.slug} checked={i===0}/>
           </>;
         })}
         <input type="button" value="Start" onclick={this.submitForm.bind(this)}/>
       </form>;
     case "sort":
       if (this.comparison === null) return null;
+      // Note: mithril key property here prevents re-using item between draws, to avoid stale images, etc, while loading new ones
       return <>
         <span id="info">{JSON.stringify(this)}</span>
         <div id="container">
-          {m(this.itemType, {item: this.comparison[0], id: "a"})}
-          {m(this.itemType, {item: this.comparison[1], id: "b"})}
+          {m(this.itemType, {item: this.comparison[0], id: "a", key: this.comparison[0]})}
+          {m(this.itemType, {item: this.comparison[1], id: "b", key: this.comparison[1]})}
         </div>
       </>;
     case "done":
@@ -84,8 +86,9 @@ const App = {
   cmp: function(a, b) {
     this.comparison = [a, b];
     m.redraw();
+
     return new Promise(function(accept) {
-      App.promiseAccept = accept;
+      App.cmpPromiseAccept = accept;
     });
   },
   sort: function(text) {
@@ -95,13 +98,13 @@ const App = {
     return BinaryHeap.sortTopN(items, this.cmp.bind(this), this.progress.bind(this), items.length);
   },
   keypress: function(e) {
-    if (App.promiseAccept === null) return;
+    if (App.cmpPromiseAccept === null) return;
     if (e.key === "a") {
-      App.promiseAccept(-1);
+      App.cmpPromiseAccept(-1);
     } else if (e.key === "f") {
-      App.promiseAccept(1);
+      App.cmpPromiseAccept(1);
     }
-    m.redraw();
+    m.redraw.sync();
   },
 };
 

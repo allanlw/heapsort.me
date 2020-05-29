@@ -133,10 +133,10 @@ const App = {
           </div>
           <div class="comparison-right-overlay" onmousedown={this.mousedown(1)}/>
         </div>
-        <div id="help">Choose the 'better' option. Click/tap it, or use{" "}
+        <div id="help">Choose the 'better' option. <span class="only-desktop">Click/tap it, or use{" "}
           <kbd>A</kbd> / <kbd>D</kbd>,{" "}
           <kbd>H</kbd> / <kbd>L</kbd>,{" "}
-          <kbd>&#x2190;</kbd> / <kbd>&#x2192;</kbd> keys.
+          <kbd>&#x2190;</kbd> / <kbd>&#x2192;</kbd> keys.</span>
         </div>
       </>;
     case "done":
@@ -208,11 +208,17 @@ const App = {
     case "KeyA":
     case "KeyH":
     case "ArrowLeft":
+    case "KeyW":
+    case "KeyJ":
+    case "ArrowUp":
       App.cmpPromiseAccept(-1);
       break;
     case "KeyD":
     case "KeyL":
     case "ArrowRight":
+    case "KeyS":
+    case "KeyK":
+    case "ArrowDown":
       App.cmpPromiseAccept(1);
       break;
     default:

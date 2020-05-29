@@ -1,31 +1,170 @@
-body, html {
+html, body {
   margin: 0px;
   padding: 0px;
   width: 100%;
   height: 100%;
 }
 
-#container {
-  top: 2em;
-  left: 0px;
+kbd {
+  border: 1px solid #aaa;
+  background-color: #eee;
+  padding: 0.1em 0.25em;
+}
+
+#about {
+  position: fixed;
   right: 0px;
   bottom: 0px;
-  position: absolute;
+  padding: 0.5em;
+  border-left: 1px solid black;
+  border-top: 1px solid black;
+  background-color: white;
+  z-index: 99;
 }
 
-#a, #b {
-  width: 48%;
-  height: 100%;
-  border: 1px solid black;
-  float: left;
+.container {
+  padding: 1em;
 }
 
-#a > img, #b > img {
-  object-fit: contain;
-  width: 100%;
-  height: 100%;
+.mode-start {
+  text-align: center;
+
+  .wtf {
+    font-size: 50%;
+  }
+
+  .explanation {
+    font-style: italics;
+    max-width: 640px;
+    margin: 1em auto;
+  }
+
+  .input-instruction {
+    font-size: 1.5em;
+    margin-top: 1em;
+  }
+
+  .select-groups {
+    margin: 1em;
+  }
+
+  .select-group {
+    margin: 0.25em;
+  }
+
+  #num-outputs {
+    margin: 1em;
+  }
+
+  #entry {
+    margin: 1em auto;
+    display: block;
+    width: 80%;
+    height: 16em;
+  }
+
+  .error {
+    color: red;
+    font-face: bold;
+    margin: 1em;
+  }
 }
 
-label, input {
-  display: block;
+.mode-sort {
+  #help {
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    padding: 0.5em;
+    border-right: 1px solid black;
+    border-top: 1px solid black;
+    background-color: white;
+    z-index: 100;
+  }
+
+  .comparison {
+    top: 2em;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    padding: 1px;
+    position: absolute;
+  }
+
+  #info {
+    position: absolute;
+    top: 0em;
+    left: 0em;
+    right: 0em;
+
+    height: 2em;
+    padding: 0.5em;
+    text-align: center;
+
+    .label {
+      font-weight: bold;
+    }
+
+    .data {
+      margin-right: 0.5em;
+    }
+
+    @media (min-width: 600px) {
+      .data {
+        margin-right: 2em;
+      }
+    }
+  }
+
+  .comparison-left-outer, .comparison-left-overlay {
+    position: absolute;
+    left: 0px;
+    right: 50%;
+    top: 0px;
+    bottom: 0px;
+  }
+
+  .comparison-left-outer, .comparison-right-outer {
+    z-index: 10; 
+  }
+
+  .comparison-left-overlay, .comparison-right-overlay {
+    z-index: 11;
+    cursor: pointer;
+  }
+
+  .comparison-right-outer, .comparison-right-overlay {
+    position: absolute;
+    left: 50%;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+  }
+
+  .comparison-left, .comparison-right {
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+    border: 1px solid black;
+
+    > img, > iframe {
+      width: 100%;
+      height: 100%;
+      border: 0px;
+      padding: 0px;
+      margin: 0px;
+    }
+
+    > img {
+      object-fit: contain;
+    }
+
+    > iframe {
+      overflow: hidden;
+    }
+
+    > p.plain-text {
+      margin: 1em;
+    }
+  }
 }

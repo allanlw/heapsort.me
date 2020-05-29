@@ -6,23 +6,23 @@ import m from "mithril";
 const ImgItem = {
   slug: "img",
   description: "Image URLs",
-  onupdate: function() {  },
+  onupdate: function() { },
   view: function(vnode) {
-    return  <div id={vnode.attrs.id}><img src={vnode.attrs.item}/></div>
+    return <img src={vnode.attrs.item}/>;
   },
 };
 const IframeItem = {
   slug: "iframe",
-  description: "Web pages",
+  description: "Web page URLs",
   view: function(vnode) {
-    return <iframe src={vnode.attrs.item} id={vnode.attrs.id}/>;
+    return <iframe scrolling="no" src={vnode.attrs.item}/>;
   },
 };
 const TextItem = {
   slug: "text",
-  description: "Plain Text",
+  description: "Plain text",
   view: function(vnode) {
-    return <span id={vnode.attrs.id}>{vnode.attrs.item}</span>;
+    return <p class="plain-text">{vnode.attrs.item}</p>;
   },
 };
 
@@ -37,50 +37,109 @@ const App = {
     this.mode = "start";
     this.itemType = null;
     this.comparison = null;
+    this.error = null;
+    this.showingExplanation = false;
   },
   submitForm: function(e) {
-    this.mode = "sort";
     const text = document.getElementById("entry").value;
     const typeSlug = document.querySelector("input[name=\"item_type\"]:checked").value;
+    const numOutputs = document.getElementById("num-outputs").value | 0;
     this.itemType = this.itemTypes.filter((x) => x.slug === typeSlug)[0];
-    m.redraw.sync(); // force creation of the frames
-    this.sort(text).then((result) => {
-      this.result = result;
-      this.mode = "done";
-    });
+
+    const promise = this.sort(text, numOutputs);
+    if (promise !== null) {
+      promise.then((result) => {
+        this.result = result;
+        this.mode = "done";
+      });
+    }
   },
-  view: function(vnode) {
+  showExplanation: function() {
+    this.showingExplanation = !this.showingExplanation;
+  },
+  viewInner: function() {
     switch (this.mode) {
     case "start":
-      return <form id="start">
-        <label for="entry">Enter URLs separated by newlines:</label>
+      return <form class="start">
+        <h1>Interactive Heapsort <a class="wtf" href="#" onclick={this.showExplanation.bind(this)}>(WTF?)</a></h1>
+        {(!this.showingExplanation)?null:<div class="explanation">
+          <p>You paste in some links and they get <a href="https://en.wikipedia.org/wiki/Heapsort">Heapsorted</a>,
+          but for every comparison you choose 'left' or right'. Choose whichever one is more&hellip;
+          whatever the fuck you're trying to sort for.</p>
+
+          <p>inb4 "what if it's not a total ordering". It like, doesn't matter mate.</p>
+        </div>}
+        <span class="input-instruction">I want to sort:</span>
+        <div class="select-groups">
+          {this.itemTypes.map((x, i) => {
+            return <div class="select-group">
+              <input type="radio" name="item_type" id={`item_type_${ x.slug}`} value={x.slug} checked={i===0}/>
+              <label for={`item_type_${ x.slug}`}>{x.description}</label>
+            </div>;
+          })}
+        </div>
+        <label for="entry" class="input-instruction">Entries separated by newlines:</label>
         <textarea id="entry"/>
-        {this.itemTypes.map((x, i) => {
-          return <>
-            <label for={"item_type_" + x.slug}>{x.description}</label>
-            <input type="radio" name="item_type" id={"item_type_" + x.slug} value={x.slug} checked={i===0}/>
-          </>;
-        })}
+        <label for="num-outputs" class="input-instruction">Number of "best" outputs:</label>
+        <div>
+          <input type="number" id="num-outputs" min="0" placeholder="blank/0 to sort all"/>
+        </div>
         <input type="button" value="Start" onclick={this.submitForm.bind(this)}/>
+        {this.error?<div class="error">{this.error}</div>:null}
       </form>;
     case "sort":
       if (this.comparison === null) return null;
       // Note: mithril key property here prevents re-using item between draws, to avoid stale images, etc, while loading new ones
       return <>
-        <span id="info">{JSON.stringify(this)}</span>
-        <div id="container">
-          {m(this.itemType, {item: this.comparison[0], id: "a", key: this.comparison[0]})}
-          {m(this.itemType, {item: this.comparison[1], id: "b", key: this.comparison[1]})}
+        <span id="info">
+          <span class="label">Sorting step: </span>
+          <span class="data">{this.sortMode === "push" ? "building heap" : "extracting best"}</span>
+          <span class="label">Step progress: </span>
+          <span class="data">{this.sortStepDone} of {this.sortStepTotal}</span>
+          <span class="label">Heap size: </span>
+          <span class="data">{this.heapSize}</span>
+        </span>
+        <div class="comparison">
+          <div class="comparison-left-outer">
+            <div class="comparison-left">
+              {m(this.itemType, {item: this.comparison[0], key: this.comparison[0]})}
+            </div>
+          </div>
+          <div class="comparison-left-overlay" onmousedown={this.mousedown(-1)}/>
+          <div class="comparison-right-outer">
+            <div class="comparison-right">
+              {m(this.itemType, {item: this.comparison[1], key: this.comparison[1]})}
+            </div>
+          </div>
+          <div class="comparison-right-overlay" onmousedown={this.mousedown(1)}/>
+        </div>
+        <div id="help">Choose the 'better' option. Click/tap it, or use{" "}
+          <kbd>A</kbd> / <kbd>D</kbd>,{" "}
+          <kbd>H</kbd> / <kbd>L</kbd>,{" "}
+          <kbd>&#x2190;</kbd> / <kbd>&#x2192;</kbd> keys.
         </div>
       </>;
     case "done":
-      return <pre>{this.result.join("\n")}</pre>;
+      return <>
+        <h2>Results ("best" first):</h2>
+        <pre>{this.result.join("\n")}</pre>
+        <button onclick={() => this.mode = "start"}>Reset</button>
+      </>;
     }
+  },
+  view: function(vnode) {
+    return <>
+      <div class={`container mode-${ this.mode}`}>{this.viewInner()}</div>
+      <div id="about">
+        &copy; 2019 <a href="https://twitter.com/allan_wirth">Allan Wirth</a>.&nbsp;
+        <a href="https://github.com/allanlw/heapsort.me">Github</a>
+      </div>
+    </>;
   },
   progress: function(mode, done, total, heapSize) {
     this.sortMode = mode;
-    this.done = done;
-    this.total = total;
+    this.sortStepDone = done;
+    this.sortStepTotal = total;
     this.heapSize = heapSize;
   },
   cmp: function(a, b) {
@@ -91,23 +150,56 @@ const App = {
       App.cmpPromiseAccept = accept;
     });
   },
-  sort: function(text) {
+  sort: function(text, numOutputs) {
     const items = text.split("\n").filter(function(x) {
       return x.length > 0;
     });
-    return BinaryHeap.sortTopN(items, this.cmp.bind(this), this.progress.bind(this), items.length);
-  },
-  keypress: function(e) {
-    if (App.cmpPromiseAccept === null) return;
-    if (e.key === "a") {
-      App.cmpPromiseAccept(-1);
-    } else if (e.key === "f") {
-      App.cmpPromiseAccept(1);
+    if (items.length === 0) {
+      this.error = "you gotta give me something to sort";
+      return null;
     }
+    if (numOutputs === 0) {
+      numOutputs = items.length;
+    }
+    numOutputs = Math.min(items.length, Math.max(1, numOutputs));
+    this.mode = "sort";
+    return BinaryHeap.sortTopN(items, this.cmp.bind(this), this.progress.bind(this), numOutputs);
+  },
+  downkeys: {},
+  keyup: function(e) {
+    delete App.downkeys[e.code];
+  },
+  keydown: function(e) {
+    if (App.cmpPromiseAccept === null) return;
+    // prevent key repeat
+    if (Object.prototype.hasOwnProperty.call(App, e.code)) return;
+    switch (e.code) {
+    case "KeyA":
+    case "KeyH":
+    case "ArrowLeft":
+      App.cmpPromiseAccept(-1);
+      break;
+    case "KeyD":
+    case "KeyL":
+    case "ArrowRight":
+      App.cmpPromiseAccept(1);
+      break;
+    default:
+      return;
+    }
+    App.downkeys[e.code] = true;
     m.redraw.sync();
+  },
+  mousedown: function(x) {
+    return function(e) {
+      if (App.cmpPromiseAccept === null) return;
+      App.cmpPromiseAccept(x);
+      e.preventDefault();
+    };
   },
 };
 
 m.mount(document.body, App);
 
-document.addEventListener("keypress", App.keypress);
+document.addEventListener("keyup", App.keyup);
+document.addEventListener("keydown", App.keydown);

@@ -118,12 +118,12 @@ export default class BinaryHeap {
     const res = [];
 
     for (let i = 0; i < input.length; i++) {
-      progress("push", res.length, input.length, heap.size);
+      progress("push", i, input.length, heap.size);
       await heap.push(input[i]);
     }
 
     while (res.length < n && heap.size > 0) {
-      progress("pop", res.length, input.length, heap.size);
+      progress("pop", res.length, n, heap.size);
       res.push(await heap.pop());
     }
 

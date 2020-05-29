@@ -32,7 +32,6 @@ export default function fetchExamples() {
     .then((titles) => fetch(infoUri + titles.map(encodeURIComponent).join("|")))
     .then((r) => r.json())
     .then((r) => {
-      console.log(r);
       const urls = [];
       const pages = r.query.pages;
       const attribution = [];

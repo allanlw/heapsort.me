@@ -11,6 +11,14 @@ const ImgItem = {
   view: function(vnode) {
     return <img src={vnode.attrs.item}/>;
   },
+  preload: function(items) {
+    return Promise.all(items.map(u => new Promise((a, e) => {
+      let img = new Image();
+      img.onload = a;
+      img.onerror = e;
+      img.src = u;
+    })));
+  },
 };
 const IframeItem = {
   slug: "iframe",
@@ -18,12 +26,18 @@ const IframeItem = {
   view: function(vnode) {
     return <iframe scrolling="no" src={vnode.attrs.item}/>;
   },
+  preload: function(items) {
+    Promise.resolve([]);
+  },
 };
 const TextItem = {
   slug: "text",
   description: "Plain text",
   view: function(vnode) {
     return <p class="plain-text">{vnode.attrs.item}</p>;
+  },
+  preload: function(items) {
+    Promise.resolve([]);
   },
 };
 
@@ -167,6 +181,8 @@ const App = {
     }
     numOutputs = Math.min(items.length, Math.max(1, numOutputs));
     this.mode = "sort";
+    this.itemType.preload(items).then(() => console.log("done preloading"));
+
     return BinaryHeap.sortTopN(items, this.cmp.bind(this), this.progress.bind(this), numOutputs);
   },
   getExamples: function() {

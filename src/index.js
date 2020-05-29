@@ -142,7 +142,7 @@ const App = {
     case "done":
       return <>
         <h2>Results ("best" first):</h2>
-        <pre>{this.result.join("\n")}</pre>
+        <pre>{this.result.map((u) => [u.startsWith("http") ? <a href={u}>{u}</a> : u, "\n"])}</pre>
         <button onclick={() => this.mode = "start"}>Reset</button>
       </>;
     }

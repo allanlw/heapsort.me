@@ -81,6 +81,15 @@ kbd {
     font-face: bold;
     margin: 1em;
   }
+
+  .attribution {
+    text-align: left;
+    width: 80%;
+    margin: 1em auto;
+    padding: 1em;
+    background-color: #eee;
+    border: 1px dotted #bbb;
+  }
 }
 
 .mode-sort {

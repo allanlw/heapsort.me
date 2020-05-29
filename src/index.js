@@ -12,8 +12,8 @@ const ImgItem = {
     return <img src={vnode.attrs.item}/>;
   },
   preload: function(items) {
-    return Promise.all(items.map(u => new Promise((a, e) => {
-      let img = new Image();
+    return Promise.all(items.map((u) => new Promise((a, e) => {
+      const img = new Image();
       img.onload = a;
       img.onerror = e;
       img.src = u;
@@ -24,10 +24,10 @@ const IframeItem = {
   slug: "iframe",
   description: "Web page URLs",
   view: function(vnode) {
-    return <iframe scrolling="no" src={vnode.attrs.item}/>;
+    return <iframe scrolling="no" sandbox src={vnode.attrs.item}/>;
   },
   preload: function(items) {
-    Promise.resolve([]);
+    return Promise.resolve([]);
   },
 };
 const TextItem = {
@@ -37,7 +37,7 @@ const TextItem = {
     return <p class="plain-text">{vnode.attrs.item}</p>;
   },
   preload: function(items) {
-    Promise.resolve([]);
+    return Promise.resolve([]);
   },
 };
 
@@ -54,6 +54,7 @@ const App = {
     this.comparison = null;
     this.error = null;
     this.showingExplanation = false;
+    this.exAttribution = null;
   },
   submitForm: function(e) {
     const text = document.getElementById("entry").value;
@@ -88,15 +89,15 @@ const App = {
         <div class="select-groups">
           {this.itemTypes.map((x, i) => {
             return <div class="select-group">
-              <input type="radio" name="item_type" id={`item_type_${ x.slug}`} value={x.slug} checked={i===0}/>
-              <label for={`item_type_${ x.slug}`}>{x.description}</label>
+              <input type="radio" name="item_type" id={`item_type_${x.slug}`} value={x.slug} checked={i===0}/>
+              <label for={`item_type_${x.slug}`}>{x.description}</label>
             </div>;
           })}
         </div>
         <label for="entry" class="input-instruction">Entries separated by newlines:</label>
         <div class="entry-container">
           <textarea id="entry"/>
-          <button id="help-example" onclick={this.getExamples}>Populate with example images from Wikimedia Commons</button>
+          <button id="help-example" onclick={this.getExamples.bind(this)}>Populate with example images from Wikimedia Commons</button>
         </div>
         <label for="num-outputs" class="input-instruction">Number of "best" outputs:</label>
         <div>
@@ -104,6 +105,7 @@ const App = {
         </div>
         <input type="button" value="Start" onclick={this.submitForm.bind(this)}/>
         {this.error?<div class="error">{this.error}</div>:null}
+        {this.exAttribution?<div class="attribution"><h2>Example Image Attribution:</h2>{this.exAttribution}</div>:null}
       </form>;
     case "sort":
       if (this.comparison === null) return null;
@@ -188,7 +190,9 @@ const App = {
   getExamples: function() {
     document.getElementById("entry").value = "Loading...";
     fetchExamples().then((ex) => {
-      document.getElementById("entry").value = ex.join("\n");
+      document.getElementById("entry").value = ex.urls.join("\n");
+      this.exAttribution = ex.attribution;
+      m.redraw();
     });
     return false;
   },

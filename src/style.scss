@@ -1,3 +1,5 @@
+$is-widescreen: "only screen and (min-aspect-ratio: 1/1)";
+
 html, body {
   margin: 0px;
   padding: 0px;
@@ -103,9 +105,9 @@ kbd {
     background-color: white;
     z-index: 100;
 
-    .only-desktop {
+    .only-widescreen {
       display: none;
-      @media (min-width: 600px) {
+      @media #{$is-widescreen} {
         display: inline;
       }
     }
@@ -138,7 +140,7 @@ kbd {
       margin-right: 0.5em;
     }
 
-    @media (min-width: 600px) {
+    @media #{$is-widescreen} {
       .data {
         margin-right: 2em;
       }
@@ -202,7 +204,7 @@ kbd {
     bottom: 0px;
   }
 
-  @media (min-width: 600px) {
+  @media #{$is-widescreen} {
     .comparison-left-outer, .comparison-left-overlay {
       top: 0px;
       left: 0px;

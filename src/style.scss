@@ -13,6 +13,13 @@ kbd {
   padding: 0.1em 0.25em;
 }
 
+@mixin mobile-half-size {
+  font-size: 0.5em;
+  @media #{$is-widescreen} {
+    font-size: 1em;
+  }
+}
+
 #about {
   position: fixed;
   right: 0px;
@@ -22,6 +29,7 @@ kbd {
   border-top: 1px solid black;
   background-color: white;
   z-index: 99;
+  @include mobile-half-size;
 }
 
 .container {
@@ -105,6 +113,8 @@ kbd {
     background-color: white;
     z-index: 100;
 
+    @include mobile-half-size;
+
     .only-widescreen {
       display: none;
       @media #{$is-widescreen} {
@@ -114,12 +124,16 @@ kbd {
   }
 
   .comparison {
-    top: 2em;
+    top: 1em;
     left: 0px;
     right: 0px;
     bottom: 0px;
     padding: 1px;
     position: absolute;
+
+    @media #{$is-widescreen} {
+      top: 2em;
+    }
   }
 
   #info {
@@ -128,8 +142,9 @@ kbd {
     left: 0em;
     right: 0em;
 
-    height: 2em;
+    height: 1em;
     padding: 0.5em;
+    @include mobile-half-size;
     text-align: center;
 
     .label {
@@ -141,6 +156,8 @@ kbd {
     }
 
     @media #{$is-widescreen} {
+      height: 2em;
+
       .data {
         margin-right: 2em;
       }

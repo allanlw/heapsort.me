@@ -45,7 +45,7 @@ export default class BinaryHeap {
   }
 
   async push(element) {
-    const id = `i${ this.uniqid++}`;
+    const id = `i${this.uniqid++}`;
     this.trueItems[id] = element;
 
     // Add the new element to the end of the array.

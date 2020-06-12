@@ -50,5 +50,6 @@ module.exports = {
     "arrow-spacing": "error",
     "require-jsdoc": "off",
     "max-len": "off",
+    "template-curly-spacing": ["error", "never"],
   },
 };

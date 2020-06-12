@@ -149,7 +149,7 @@ const App = {
   },
   view: function(vnode) {
     return <>
-      <div class={`container mode-${ this.mode}`}>{this.viewInner()}</div>
+      <div class={`container mode-${this.mode}`}>{this.viewInner()}</div>
       <div id="about">
         &copy; 2019 <a href="https://twitter.com/allan_wirth">Allan Wirth</a>.&nbsp;
         <a href="https://github.com/allanlw/heapsort.me">Github</a>

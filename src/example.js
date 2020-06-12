@@ -11,7 +11,7 @@ const infoUri = `${base}action=query&prop=imageinfo|info&inprop=url&iiprop=url|e
 function licenseExtra(x) {
   if (x.startsWith("CC")) {
     const parts = x.split(" ");
-    return <a href={`https://creativecommons.org/licenses/${ parts[1].toLowerCase() }/${ parts[2] }/`}>{x}</a>;
+    return <a href={`https://creativecommons.org/licenses/${parts[1].toLowerCase()}/${parts[2]}/`}>{x}</a>;
   }
 
   switch (x) {
@@ -20,7 +20,7 @@ function licenseExtra(x) {
   case "Public domain":
     return null;
   default:
-    console.log(`Unknown license: ${ x}`);
+    console.log(`Unknown license: ${x}`);
     return null;
   }
 }

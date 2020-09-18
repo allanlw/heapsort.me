@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "commonjs",
+    "lib": ["es2018", "DOM"],
+    "jsx": "react",
+    "jsxFactory": "m",
+    "esModuleInterop": true,
+    "outDir": "bin",
+
+    "declaration": true,
+    "strict": true,
+    "noImplicitReturns": true
+  },
+  "awesomeTypescriptLoaderOptions": {
+    "useBabel": true,
+    "babelCore": "@babel/core"
+  }
+}

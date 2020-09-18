@@ -16,20 +16,34 @@
 //  a, b elements from the input list
 // to compare. Returns -1 if a is a<b, and 1 if a>b, (or theoretically 0 if
 // they're equal)
-export default class BinaryHeap {
-  constructor(cmpFunction) {
-    this.heap = [];
+type cmpFunc<T> = (x: T, y: T) => Promise<number>;
+type progressFunc = (
+  sortMode: string,
+  sortStepDone: number,
+  sortStepTotal: number,
+  heapSize: number
+) => void;
+
+export default class BinaryHeap<T> {
+  private heap: Array<string> = [];
+  private trueItems: {
+    [id: string]: T;
+  } = {};
+  private uniqid = 0;
+  private memos: {
+    [key: string]: number;
+  } = {};
+  private cmpFunction: cmpFunc<T>;
+
+  private constructor(cmpFunction: cmpFunc<T>) {
     this.cmpFunction = cmpFunction;
-    this.trueItems = {};
-    this.uniqid = 0;
-    this.memos = {};
   }
 
-  get size() {
+  private get size() {
     return this.heap.length;
   }
 
-  async cmp(a, b) {
+  private async cmp(a: string, b: string) {
     const k1 = `${a}|${b}`;
     const k2 = `${b}|${a}`;
     if (Object.prototype.hasOwnProperty.call(this.memos, k1)) {
@@ -44,7 +58,7 @@ export default class BinaryHeap {
     return res;
   }
 
-  async push(element) {
+  private async push(element: T) {
     const id = `i${this.uniqid++}`;
     this.trueItems[id] = element;
 
@@ -55,12 +69,16 @@ export default class BinaryHeap {
     return this.bubbleUp(this.heap.length - 1);
   }
 
-  async pop() {
+  private async pop() {
     // Store the first element so we can return it later.
     const resultId = this.heap[0];
 
     // Get the element at the end of the array.
     const end = this.heap.pop();
+    if (typeof end == "undefined") {
+      throw new Error("pop empty heap");
+    }
+
     // If there are any elements left, put the end element at the
     // start, and let it sink down.
     if (this.heap.length > 0) {
@@ -74,7 +92,7 @@ export default class BinaryHeap {
     return result;
   }
 
-  async bubbleUp(n) {
+  private async bubbleUp(n: number) {
     // Fetch the element that has to be moved.
     const element = this.heap[n];
     // When at 0, an element can not go up any further.
@@ -84,7 +102,7 @@ export default class BinaryHeap {
       const parent = this.heap[parentN];
       // If the parent has a lesser score, things are in order and we
       // are done.
-      if (await this.cmp(element, parent) > 0) {
+      if ((await this.cmp(element, parent)) > 0) {
         break;
       }
 
@@ -96,7 +114,7 @@ export default class BinaryHeap {
     }
   }
 
-  async sinkDown(n) {
+  private async sinkDown(n: number) {
     // Look up the target element and its score.
     const length = this.heap.length;
     const element = this.heap[n];
@@ -107,16 +125,14 @@ export default class BinaryHeap {
       const child1N = child2N - 1;
       // This is used to store the new position of the element,
       // if any.
-      let swap = null;
-      let swapItem = null;
+      let swap: { position: number; value: string } | null = null;
       // If the first child exists (is inside the array)...
       if (child1N < length) {
         // Look it up and compute its score.
         const child1 = this.heap[child1N];
         // If the child is better than the element, we need to swap
-        if (await this.cmp(child1, element) < 0) {
-          swap = child1N;
-          swapItem = child1;
+        if ((await this.cmp(child1, element)) < 0) {
+          swap = { position: child1N, value: child1 };
         }
       }
       // Do the same checks for the other child.
@@ -124,9 +140,10 @@ export default class BinaryHeap {
         const child2 = this.heap[child2N];
         // if the NEW element is in position child2n is better than what's in position
         // n, we need to swap
-        if (await this.cmp((swap === null) ? element : swapItem, child2) > 0) {
-          swap = child2N;
-          swapItem = child2;
+        if (
+          (await this.cmp(swap === null ? element : swap.value, child2)) > 0
+        ) {
+          swap = { position: child2N, value: child2 };
         }
       }
 
@@ -134,25 +151,30 @@ export default class BinaryHeap {
       if (swap === null) break;
 
       // Otherwise, swap and continue.
-      this.heap[n] = swapItem;
-      this.heap[swap] = element;
-      n = swap;
+      this.heap[n] = swap.value;
+      this.heap[swap.position] = element;
+      n = swap.position;
     }
   }
 
-  static async sortTopN(input, cmpFunc, progress, n) {
+  static async sortTopN<T>(
+    input: T[],
+    cmpFunc: cmpFunc<T>,
+    n: number,
+    progress?: progressFunc
+  ): Promise<T[]> {
     const heap = new BinaryHeap(cmpFunc);
-    const res = [];
+    const res: T[] = [];
 
     for (let i = 0; i < input.length; i++) {
-      if (progress !== null) {
+      if (progress) {
         progress("push", i, input.length, heap.size);
       }
       await heap.push(input[i]);
     }
 
     while (res.length < n && heap.size > 0) {
-      if (progress !== null) {
+      if (progress) {
         progress("pop", res.length, n, heap.size);
       }
       res.push(await heap.pop());

@@ -34,7 +34,7 @@
     "core-js": "^3.9.1",
     "js-combinatorics": "^1.4.5",
     "mithril": "^2.0.4",
-    "node-sass": "^4.14.1"
+    "node-sass": "^7.0.0"
   },
   "scripts": {
     "start": "webpack-dev-server",
